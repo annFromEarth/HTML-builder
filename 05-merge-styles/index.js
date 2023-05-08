@@ -3,8 +3,10 @@ const path = require ('path');
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
 
-const folderToCopy = '05-merge-styles/styles';
-const destinationFolder = '05-merge-styles/project-dist';
+const codeDir = path.dirname(__filename);
+
+const folderToCopy = path.join(codeDir, 'styles');
+const destinationFolder = path.join(codeDir, 'project-dist');
   
 let filesArray = [];
 let bundle='';
@@ -31,17 +33,27 @@ function createBundle() {
       appendCSS();}});
 
   function appendCSS() {
-    filesArray.forEach(x=> { if(!checkIfDirectory(x) && checkIfCSS(x)) {
-      fs.readFile(path.join(folderToCopy, x), (err, data) => {
+    filesArray.forEach(x=> { 
+
+      fs.stat(path.join(folderToCopy, x), (err, stats) => { 
         if (err) {
           throw err;
         } else {
-          bundle+=data+'\n';
-          emitter.on('bundleReady', appendStyles);
-          emitter.emit('bundleReady');
+          if (!stats.isDirectory()) {
+            if (checkIfCSS(x)) {
+              fs.readFile(path.join(folderToCopy, x), (err, data) => {
+                if (err) {
+                  throw err;
+                } else {
+                  bundle+=data+'\n';
+                  emitter.on('bundleReady', appendStyles);
+                  emitter.emit('bundleReady');
+                }
+              });}
+          }
         }
       });
-    }});
+    });
   }
 
   function appendStyles() {
@@ -50,15 +62,6 @@ function createBundle() {
     });
   }
 }    
-
-function checkIfDirectory(filename){
-  fs.stat(path.join(folderToCopy, filename), (err, stats) => { 
-    if (err) {
-      throw err;
-    } else {
-      if (stats.isDirectory()) return true; }
-  });
-}
 
 function checkIfCSS(filename){
   if (path.parse(filename).ext === '.css') return true;
