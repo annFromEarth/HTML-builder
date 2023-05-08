@@ -5,6 +5,7 @@ const targetFolderPath = path.join(path.dirname(__filename), targetFolder);
 let filesArray = [];
 
 function getFilesInfo(pathsArray) {
+  console.log(targetFolderPath);
   pathsArray.forEach(x=>{
     fs.stat(path.join(targetFolderPath , x), (err, stats) => { 
       if (err) {
