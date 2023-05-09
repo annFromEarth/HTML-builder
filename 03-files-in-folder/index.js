@@ -11,7 +11,7 @@ function getFilesInfo(pathsArray) {
       if (err) {
         throw err;
       } else {
-        if (!stats.isDirectory()) {console.log(path.parse(x).name +' - '+ path.parse(x).ext.replace('.','') +' - '+ stats.size/1000+'kb');
+        if (!stats.isDirectory()) {console.log(path.parse(x).name +' - '+ path.parse(x).ext.replace('.','') +' - '+ (stats.size/1024).toFixed(2)+'kb');
         }
       }
     });
